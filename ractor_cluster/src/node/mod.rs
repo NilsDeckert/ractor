@@ -443,7 +443,7 @@ impl Actor for NodeServer {
                 let _ = state.subscriptions.remove(&id);
             }
             Self::Msg::ConnectionStringChanged(addr) => {
-                state.this_node_name.connection_string = addr;
+                state.this_node_name.connection_string = addr.to_string();
             }
         }
         Ok(())

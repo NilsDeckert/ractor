@@ -71,7 +71,7 @@ impl Actor for Listener {
             let supervisor = myself.try_get_supervisor();
             let local_addr = listener.local_addr();
             if supervisor.is_some() && local_addr.is_ok() {
-                supervisor.unwrap().send_message(ConnectionStringChanged(local_addr?))?
+                supervisor.unwrap().send_message(ConnectionStringChanged(local_addr?.to_string()))?
             }
         }
 

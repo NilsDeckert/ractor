@@ -140,6 +140,9 @@ pub enum NodeServerMessage {
 
     /// Unsubscribe to node events for the given subscription id
     UnsubscribeToEvents(String),
+
+    /// Change the connection String for the [ crate::net::listener ]
+    ConnectionStringChanged(core::net::SocketAddr),
 }
 
 /// Message from the TCP `ractor_cluster::net::session::Session` actor and the
@@ -438,6 +441,9 @@ impl Actor for NodeServer {
             }
             Self::Msg::UnsubscribeToEvents(id) => {
                 let _ = state.subscriptions.remove(&id);
+            }
+            Self::Msg::ConnectionStringChanged(addr) => {
+                state.this_node_name.connection_string = addr;
             }
         }
         Ok(())

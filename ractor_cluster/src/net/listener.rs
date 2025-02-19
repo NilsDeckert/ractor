@@ -11,6 +11,7 @@ use tokio::net::TcpListener;
 
 use super::IncomingEncryptionMode;
 use crate::node::NodeServerMessage;
+use crate::NodeServerMessage::ConnectionStringChanged;
 
 /// A Tcp Socket [Listener] responsible for accepting new connections and spawning [super::session::Session]s
 /// which handle the message sending and receiving over the socket.
@@ -64,6 +65,15 @@ impl Actor for Listener {
                 return Err(From::from(err));
             }
         };
+
+        // Port 0 will let the OS choose a free port. In this case we have to update our connection_string
+        if self.port == 0 {
+            let supervisor = myself.try_get_supervisor();
+            let local_addr = listener.local_addr();
+            if supervisor.is_some() && local_addr.is_ok() {
+                supervisor.unwrap().send_message(ConnectionStringChanged(local_addr?))?
+            }
+        }
 
         // startup the event processing loop by sending an initial msg
         let _ = myself.cast(ListenerMessage);

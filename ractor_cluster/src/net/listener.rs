@@ -60,16 +60,16 @@ impl Actor for Listener {
         let addr = format!("[::]:{}", self.port);
         let listener = match TcpListener::bind(&addr).await {
             Ok(l) => {
-                // If the used port differs from the user-specified port, inform the supervisor.
+                // If the used port differs from the user-specified port, inform the node server.
                 let local_addr = l.local_addr()?;
                 if local_addr.port() != self.port {
                     node_server.send_message(NodeServerMessage::PortChanged {
-                        port: local_addr.port()
+                        port: local_addr.port(),
                     })?;
                 }
 
                 l
-            },
+            }
             Err(err) => {
                 return Err(From::from(err));
             }
